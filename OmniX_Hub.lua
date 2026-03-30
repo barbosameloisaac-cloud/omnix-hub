@@ -17,20 +17,20 @@ pcall(function()
 end)
 
 local RAIDS = {
-    {name="Dr Animal", nivel=1, btn="Animal"},
-    {name="Drone Gigante", nivel=50, btn="Drone"},
-    {name="Grande Escorpiao", nivel=125, btn="Escorpi"},
-    {name="Crakao", nivel=180, btn="Crakao"},
-    {name="Vilgax Raid", nivel=400, btn="Vilgax"},
-    {name="Totem de Puch", nivel=500, btn="Puch"},
-    {name="Forever Knights", nivel=750, btn="Eternal"},
-    {name="Highbreed DNA", nivel=750, btn="Highbreed"},
-    {name="Rojo Boss", nivel=800, btn="Rojo"},
-    {name="Dagon Raid", nivel=950, btn="Dagon"},
-    {name="Templo do Sol", nivel=1000, btn="Sol"},
-    {name="Fistrick Raid", nivel=1200, btn="Fistrick"},
-    {name="Albedo", nivel=1500, btn="Albedo"},
-    {name="Monstro Dimensional", nivel=1500, btn="Dimensional"},
+    {name="Dr Animal", nivel=1},
+    {name="Drone Gigante", nivel=50},
+    {name="Grande Escorpiao", nivel=125},
+    {name="Crakao", nivel=180},
+    {name="Vilgax", nivel=400},
+    {name="Totem de Puch", nivel=500},
+    {name="Forever Knights", nivel=750},
+    {name="Highbreed", nivel=750},
+    {name="Rojo", nivel=800},
+    {name="Dagon", nivel=950},
+    {name="Templo do Sol", nivel=1000},
+    {name="Fistrick", nivel=1200},
+    {name="Albedo", nivel=1500},
+    {name="Monstro Dimensional", nivel=1500},
 }
 
 local QUESTS = {
@@ -85,11 +85,14 @@ local axOn = false
 local autoWatch = false
 local autoMaster = false
 local selRaid = nil
+local inRaid = false
+local farmBusy = false
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "OmniXV3"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.DisplayOrder = 999
 pcall(function() if syn then syn.protect_gui(gui) end end)
 gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -113,7 +116,7 @@ local function noti(msg)
         f.Position = UDim2.new(0.5,-140,0,-40)
         f.BackgroundColor3 = purple
         f.BorderSizePixel = 0
-        f.ZIndex = 50
+        f.ZIndex = 999
         f.Parent = gui
         Instance.new("UICorner",f).CornerRadius = UDim.new(0,8)
         local t = Instance.new("TextLabel")
@@ -125,7 +128,7 @@ local function noti(msg)
         t.Font = Enum.Font.GothamBold
         t.TextSize = 11
         t.TextWrapped = true
-        t.ZIndex = 51
+        t.ZIndex = 1000
         t.Parent = f
         TweenService:Create(f,TweenInfo.new(0.3,Enum.EasingStyle.Back),{Position=UDim2.new(0.5,-140,0,8)}):Play()
         task.delay(2.5,function()
@@ -136,126 +139,58 @@ local function noti(msg)
     end)
 end
 
-local function fireGameButton(keyword)
-    local found = false
+local function findPart(keyword)
+    local result = nil
     pcall(function()
-        local pgui = player:FindFirstChild("PlayerGui")
-        if not pgui then return end
-        for _,desc in pairs(pgui:GetDescendants()) do
-            if desc:IsA("TextButton") or desc:IsA("ImageButton") then
-                local txt = ""
-                if desc:IsA("TextButton") then txt = desc.Text:lower() end
-                if txt:find("ir para") or txt:find("teleport") or txt:find("go to") then
-                    local parentChain = ""
-                    local p = desc.Parent
-                    for i=1,8 do
-                        if p then
-                            parentChain = parentChain .. " " .. p.Name:lower()
-                            if p:IsA("TextLabel") then
-                                parentChain = parentChain .. " " .. p.Text:lower()
-                            end
-                            p = p.Parent
-                        end
-                    end
-                    for _,sib in pairs(desc.Parent:GetChildren()) do
-                        if sib:IsA("TextLabel") then
-                            parentChain = parentChain .. " " .. sib.Text:lower()
-                        end
-                    end
-                    if parentChain:find(keyword:lower()) then
-                        pcall(function()
-                            desc.Visible = true
-                            firesignal(desc.MouseButton1Click)
-                        end)
-                        pcall(function()
-                            firesignal(desc.Activated)
-                        end)
-                        found = true
-                        return
-                    end
+        local kw = keyword:lower()
+        for _,o in pairs(Workspace:GetDescendants()) do
+            if o:IsA("Model") and o.Name:lower():find(kw) then
+                local p = o:FindFirstChild("HumanoidRootPart") or o.PrimaryPart or o:FindFirstChildWhichIsA("BasePart")
+                if p then result = p return end
+            end
+        end
+        if not result then
+            for _,o in pairs(Workspace:GetDescendants()) do
+                if o:IsA("BasePart") and o.Name:lower():find(kw) then
+                    result = o
+                    return
                 end
             end
         end
     end)
-    return found
+    return result
 end
 
-local function fireRemoteTP(keyword)
-    pcall(function()
-        for _,obj in pairs(ReplicatedStorage:GetDescendants()) do
-            if obj:IsA("RemoteEvent") then
-                local n = obj.Name:lower()
-                if n:find("teleport") or n:find("tp") or n:find("goto") or n:find("travel") or n:find("warp") then
-                    pcall(function() obj:FireServer(keyword) end)
-                    pcall(function() obj:FireServer("teleport", keyword) end)
-                end
-            end
-        end
-        for _,obj in pairs(game:GetDescendants()) do
-            if obj:IsA("RemoteEvent") then
-                local n = obj.Name:lower()
-                if n:find("teleport") or n:find("tp") or n:find("goto") or n:find("warp") then
-                    pcall(function() obj:FireServer(keyword) end)
-                end
-            end
-        end
-    end)
+local function safeTP(keyword)
+    if not rootPart then return false end
+    local part = findPart(keyword)
+    if part then
+        rootPart.CFrame = CFrame.new(part.Position + Vector3.new(0,5,0))
+        return true
+    end
+    return false
 end
 
-local function clickNearbyPrompts()
+local function clickPrompts()
     pcall(function()
         if not rootPart then return end
         for _,obj in pairs(Workspace:GetDescendants()) do
             if obj:IsA("ProximityPrompt") then
                 local par = obj.Parent
-                if par and par:IsA("BasePart") then
-                    if (rootPart.Position - par.Position).Magnitude < 25 then
-                        pcall(function() fireproximityprompt(obj) end)
-                    end
-                elseif par then
-                    local bp = par:FindFirstChildWhichIsA("BasePart")
-                    if bp and (rootPart.Position - bp.Position).Magnitude < 25 then
+                if par then
+                    local bp = par:IsA("BasePart") and par or par:FindFirstChildWhichIsA("BasePart")
+                    if bp and (rootPart.Position - bp.Position).Magnitude < 20 then
                         pcall(function() fireproximityprompt(obj) end)
                     end
                 end
             end
             if obj:IsA("ClickDetector") then
                 local par = obj.Parent
-                if par and par:IsA("BasePart") then
-                    if (rootPart.Position - par.Position).Magnitude < 25 then
-                        pcall(function() fireclickdetector(obj) end)
-                    end
+                if par and par:IsA("BasePart") and (rootPart.Position - par.Position).Magnitude < 20 then
+                    pcall(function() fireclickdetector(obj) end)
                 end
             end
         end
-    end)
-end
-
-local function smartTP(keyword)
-    noti("Buscando: "..keyword)
-    local ok = fireGameButton(keyword)
-    if not ok then
-        fireRemoteTP(keyword)
-    end
-    pcall(function()
-        for _,obj in pairs(Workspace:GetDescendants()) do
-            if (obj:IsA("Model") or obj:IsA("BasePart")) and obj.Name:lower():find(keyword:lower()) then
-                local part
-                if obj:IsA("Model") then
-                    part = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                else
-                    part = obj
-                end
-                if part and rootPart then
-                    rootPart.CFrame = CFrame.new(part.Position + Vector3.new(0,5,0))
-                    noti("TP: "..keyword.." OK!")
-                    return
-                end
-            end
-        end
-    end)
-    task.delay(0.5, function()
-        clickNearbyPrompts()
     end)
 end
 
@@ -269,7 +204,10 @@ local function getMobs()
                     if p.Character == o.Parent then isP = true break end
                 end
                 if not isP then
-                    local hr = o.Parent:FindFirstChild("HumanoidRootPart") or o.Parent:FindFirstChild("Torso") or o.Parent:FindFirstChild("UpperTorso") or o.Parent:FindFirstChildWhichIsA("BasePart")
+                    local hr = o.Parent:FindFirstChild("HumanoidRootPart")
+                        or o.Parent:FindFirstChild("Torso")
+                        or o.Parent:FindFirstChild("UpperTorso")
+                        or o.Parent:FindFirstChildWhichIsA("BasePart")
                     if hr then
                         table.insert(m,{h=o, r=hr, md=o.Parent})
                     end
@@ -284,20 +222,11 @@ local function kMob(mob)
     pcall(function() mob.h.Health = 0 end)
     pcall(function()
         if rootPart and mob.r then
+            rootPart.CFrame = CFrame.new(mob.r.Position + Vector3.new(0,2,0))
+            task.wait(0.05)
             firetouchinterest(rootPart, mob.r, 0)
             task.wait()
             firetouchinterest(rootPart, mob.r, 1)
-        end
-    end)
-    pcall(function()
-        mob.md:Destroy()
-    end)
-end
-
-local function tpToMob(mob)
-    pcall(function()
-        if rootPart and mob.r then
-            rootPart.CFrame = CFrame.new(mob.r.Position + Vector3.new(0,3,0))
         end
     end)
 end
@@ -309,9 +238,14 @@ local function getLvl()
         if g then
             for _,d in pairs(g:GetDescendants()) do
                 if d:IsA("TextLabel") then
-                    local t = d.Text
-                    local m = t:match("Lv%.%s*(%d+)") or t:match("Level%s*(%d+)") or t:match("Nivel%s*(%d+)") or t:match("Lv%s*(%d+)")
-                    if m then lv = tonumber(m) return end
+                    local t = d.Text or ""
+                    local m = t:match("Lv%.%s*(%d+)")
+                        or t:match("Level%s*(%d+)")
+                        or t:match("Nivel%s*(%d+)")
+                        or t:match("Lv%s*(%d+)")
+                    if m and tonumber(m) > lv then
+                        lv = tonumber(m)
+                    end
                 end
             end
         end
@@ -321,10 +255,9 @@ local function getLvl()
         if ls then
             for _,v in pairs(ls:GetChildren()) do
                 local n = v.Name:lower()
-                if n:find("lv") or n:find("level") or n:find("nivel") then
-                    if v.Value and tonumber(v.Value) then
-                        lv = tonumber(v.Value)
-                    end
+                if (n:find("lv") or n:find("level") or n:find("nivel")) and v.Value then
+                    local val = tonumber(v.Value)
+                    if val and val > lv then lv = val end
                 end
             end
         end
@@ -340,78 +273,31 @@ local function bestRaid(lv)
     return b
 end
 
-local function collectWatches()
+local function fireTransform(alienName)
     pcall(function()
-        for _,obj in pairs(Workspace:GetDescendants()) do
-            local n = obj.Name:lower()
-            if n:find("relogio") or n:find("watch") or n:find("omnitrix") or n:find("clock") or n:find("colet") then
-                if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("UnionOperation") then
-                    if rootPart then
-                        local old = rootPart.CFrame
-                        rootPart.CFrame = CFrame.new(obj.Position)
-                        task.wait(0.15)
-                        pcall(function()
-                            firetouchinterest(rootPart, obj, 0)
-                            task.wait()
-                            firetouchinterest(rootPart, obj, 1)
-                        end)
-                    end
-                end
-                if obj:IsA("Model") then
-                    local bp = obj:FindFirstChildWhichIsA("BasePart")
-                    if bp and rootPart then
-                        rootPart.CFrame = CFrame.new(bp.Position)
-                        task.wait(0.15)
-                        pcall(function()
-                            firetouchinterest(rootPart, bp, 0)
-                            task.wait()
-                            firetouchinterest(rootPart, bp, 1)
-                        end)
-                    end
+        for _,obj in pairs(ReplicatedStorage:GetDescendants()) do
+            if obj:IsA("RemoteEvent") then
+                local n = obj.Name:lower()
+                if n:find("transform") or n:find("omnitrix") or n:find("alien") or n:find("morph") or n:find("forma") then
+                    pcall(function() obj:FireServer(alienName) end)
+                    pcall(function() obj:FireServer("transform", alienName) end)
+                    pcall(function() obj:FireServer(alienName, true) end)
                 end
             end
-            if obj:IsA("ProximityPrompt") then
-                local pn = obj.Parent and obj.Parent.Name:lower() or ""
-                if pn:find("relogio") or pn:find("watch") or pn:find("omnitrix") then
-                    pcall(function() fireproximityprompt(obj) end)
-                end
-            end
-            if obj:IsA("ClickDetector") then
-                local pn = obj.Parent and obj.Parent.Name:lower() or ""
-                if pn:find("relogio") or pn:find("watch") or pn:find("omnitrix") then
-                    pcall(function() fireclickdetector(obj) end)
+            if obj:IsA("RemoteFunction") then
+                local n = obj.Name:lower()
+                if n:find("transform") or n:find("omnitrix") or n:find("alien") then
+                    pcall(function() obj:InvokeServer(alienName) end)
                 end
             end
         end
     end)
-end
-
-local function tryMasterControl()
     pcall(function()
-        for _,obj in pairs(game:GetDescendants()) do
-            if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
+        for _,obj in pairs(Workspace:GetDescendants()) do
+            if obj:IsA("RemoteEvent") then
                 local n = obj.Name:lower()
-                if n:find("master") or n:find("control") or n:find("mastercontrol") then
-                    if obj:IsA("RemoteEvent") then
-                        obj:FireServer()
-                        obj:FireServer(true)
-                        obj:FireServer("activate")
-                    else
-                        pcall(function() obj:InvokeServer() end)
-                        pcall(function() obj:InvokeServer(true) end)
-                    end
-                end
-            end
-        end
-        for _,obj in pairs(game:GetDescendants()) do
-            if obj:IsA("RemoteEvent") or obj:IsA("RemoteFunction") then
-                local n = obj.Name:lower()
-                if n:find("transform") or n:find("omnitrix") or n:find("alien") then
-                    if obj:IsA("RemoteEvent") then
-                        pcall(function() obj:FireServer("mastercontrol") end)
-                        pcall(function() obj:FireServer("master_control") end)
-                        pcall(function() obj:FireServer("MasterControl") end)
-                    end
+                if n:find("transform") or n:find("omnitrix") then
+                    pcall(function() obj:FireServer(alienName) end)
                 end
             end
         end
@@ -420,11 +306,64 @@ local function tryMasterControl()
         local pgui = player:FindFirstChild("PlayerGui")
         if pgui then
             for _,d in pairs(pgui:GetDescendants()) do
-                if (d:IsA("TextButton") or d:IsA("ImageButton")) then
-                    local txt = d:IsA("TextButton") and d.Text:lower() or d.Name:lower()
-                    if txt:find("master") or txt:find("control") or txt:find("desbloque") then
+                if d:IsA("TextButton") then
+                    local txt = d.Text:lower()
+                    if txt == alienName:lower() or txt:find(alienName:lower()) then
                         pcall(function() firesignal(d.MouseButton1Click) end)
-                        pcall(function() firesignal(d.Activated) end)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+local function collectWatches()
+    pcall(function()
+        for _,obj in pairs(Workspace:GetDescendants()) do
+            local n = obj.Name:lower()
+            if n:find("relogio") or n:find("watch") or n:find("omnitrix") or n:find("colet") then
+                if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("UnionOperation") then
+                    if rootPart then
+                        rootPart.CFrame = CFrame.new(obj.Position)
+                        task.wait(0.2)
+                        pcall(function()
+                            firetouchinterest(rootPart, obj, 0)
+                            task.wait(0.1)
+                            firetouchinterest(rootPart, obj, 1)
+                        end)
+                    end
+                end
+            end
+            if obj:IsA("ProximityPrompt") then
+                local pn = obj.Parent and obj.Parent.Name:lower() or ""
+                if pn:find("relogio") or pn:find("watch") or pn:find("omnitrix") or pn:find("colet") then
+                    pcall(function() fireproximityprompt(obj) end)
+                end
+            end
+        end
+    end)
+end
+
+local function tryMasterControl()
+    pcall(function()
+        for _,obj in pairs(ReplicatedStorage:GetDescendants()) do
+            if obj:IsA("RemoteEvent") then
+                local n = obj.Name:lower()
+                if n:find("master") or n:find("control") then
+                    pcall(function() obj:FireServer() end)
+                    pcall(function() obj:FireServer(true) end)
+                end
+            end
+        end
+    end)
+    pcall(function()
+        local pgui = player:FindFirstChild("PlayerGui")
+        if pgui then
+            for _,d in pairs(pgui:GetDescendants()) do
+                if d:IsA("TextButton") then
+                    local txt = d.Text:lower()
+                    if txt:find("master") or txt:find("control") then
+                        pcall(function() firesignal(d.MouseButton1Click) end)
                     end
                 end
             end
@@ -440,16 +379,17 @@ mf.BackgroundColor3 = dark
 mf.BorderSizePixel = 0
 mf.Active = true
 mf.Draggable = true
+mf.ZIndex = 100
 mf.Parent = gui
 Instance.new("UICorner",mf).CornerRadius = UDim.new(0,10)
-local ms = Instance.new("UIStroke",mf)
-ms.Color = purple
-ms.Thickness = 1.5
+Instance.new("UIStroke",mf).Color = purple
+Instance.new("UIStroke",mf).Thickness = 1.5
 
 local hd = Instance.new("Frame")
 hd.Size = UDim2.new(1,0,0,32)
 hd.BackgroundColor3 = dark2
 hd.BorderSizePixel = 0
+hd.ZIndex = 101
 hd.Parent = mf
 Instance.new("UICorner",hd).CornerRadius = UDim.new(0,10)
 local hfix = Instance.new("Frame")
@@ -457,41 +397,31 @@ hfix.Size = UDim2.new(1,0,0,10)
 hfix.Position = UDim2.new(0,0,1,-10)
 hfix.BackgroundColor3 = dark2
 hfix.BorderSizePixel = 0
+hfix.ZIndex = 101
 hfix.Parent = hd
 
 local tl = Instance.new("TextLabel")
-tl.Size = UDim2.new(1,-70,1,0)
+tl.Size = UDim2.new(1,-40,1,0)
 tl.Position = UDim2.new(0,10,0,0)
 tl.BackgroundTransparency = 1
-tl.Text = "Omni-X Hub v3.1"
+tl.Text = "Omni-X Hub v3.2"
 tl.TextColor3 = purpleL
 tl.Font = Enum.Font.GothamBold
 tl.TextSize = 13
 tl.TextXAlignment = Enum.TextXAlignment.Left
+tl.ZIndex = 102
 tl.Parent = hd
 
-local xBtn = Instance.new("TextButton")
-xBtn.Size = UDim2.new(0,24,0,24)
-xBtn.Position = UDim2.new(1,-28,0,4)
-xBtn.BackgroundColor3 = red
-xBtn.Text = "X"
-xBtn.TextColor3 = white
-xBtn.Font = Enum.Font.GothamBold
-xBtn.TextSize = 12
-xBtn.BorderSizePixel = 0
-xBtn.Parent = hd
-Instance.new("UICorner",xBtn).CornerRadius = UDim.new(0,6)
-xBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
-
 local mBtn = Instance.new("TextButton")
-mBtn.Size = UDim2.new(0,24,0,24)
-mBtn.Position = UDim2.new(1,-56,0,4)
-mBtn.BackgroundColor3 = dark3
+mBtn.Size = UDim2.new(0,28,0,28)
+mBtn.Position = UDim2.new(1,-32,0,2)
+mBtn.BackgroundColor3 = purple
 mBtn.Text = "_"
 mBtn.TextColor3 = white
 mBtn.Font = Enum.Font.GothamBold
-mBtn.TextSize = 12
+mBtn.TextSize = 14
 mBtn.BorderSizePixel = 0
+mBtn.ZIndex = 103
 mBtn.Parent = hd
 Instance.new("UICorner",mBtn).CornerRadius = UDim.new(0,6)
 
@@ -500,15 +430,18 @@ mBtn.MouseButton1Click:Connect(function()
     isMin = not isMin
     if isMin then
         TweenService:Create(mf,TweenInfo.new(0.25),{Size=UDim2.new(0,370,0,32)}):Play()
+        mBtn.Text = "+"
     else
         TweenService:Create(mf,TweenInfo.new(0.25),{Size=UDim2.new(0,370,0,430)}):Play()
+        mBtn.Text = "_"
     end
 end)
 
 local tabF = Instance.new("Frame")
-tabF.Size = UDim2.new(1,-6,0,24)
+tabF.Size = UDim2.new(1,-6,0,26)
 tabF.Position = UDim2.new(0,3,0,34)
 tabF.BackgroundTransparency = 1
+tabF.ZIndex = 101
 tabF.Parent = mf
 
 local TABS = {"Farm","Raids","Quests","TP","Player","ESP"}
@@ -524,23 +457,25 @@ for i,tn in ipairs(TABS) do
     tb.Text = tn
     tb.TextColor3 = (tn==curTab) and white or dimW
     tb.Font = Enum.Font.GothamBold
-    tb.TextSize = 10
+    tb.TextSize = 11
     tb.BorderSizePixel = 0
+    tb.ZIndex = 102
     tb.Parent = tabF
     Instance.new("UICorner",tb).CornerRadius = UDim.new(0,5)
     tabBtns[tn] = tb
 
     local pg = Instance.new("ScrollingFrame")
     pg.Name = tn
-    pg.Size = UDim2.new(1,-6,1,-62)
-    pg.Position = UDim2.new(0,3,0,60)
+    pg.Size = UDim2.new(1,-6,1,-64)
+    pg.Position = UDim2.new(0,3,0,62)
     pg.BackgroundTransparency = 1
-    pg.ScrollBarThickness = 3
+    pg.ScrollBarThickness = 4
     pg.ScrollBarImageColor3 = purple
     pg.CanvasSize = UDim2.new(0,0,0,0)
     pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
     pg.Visible = (tn==curTab)
     pg.BorderSizePixel = 0
+    pg.ZIndex = 101
     pg.Parent = mf
     Instance.new("UIListLayout",pg).Padding = UDim.new(0,4)
     local pd = Instance.new("UIPadding",pg)
@@ -567,10 +502,11 @@ local function nxO() lo=lo+1 return lo end
 
 local function mkSec(pg,txt)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1,0,0,22)
+    f.Size = UDim2.new(1,0,0,24)
     f.BackgroundColor3 = dark2
     f.BorderSizePixel = 0
     f.LayoutOrder = nxO()
+    f.ZIndex = 102
     f.Parent = pg
     Instance.new("UICorner",f).CornerRadius = UDim.new(0,5)
     local l = Instance.new("TextLabel")
@@ -582,19 +518,21 @@ local function mkSec(pg,txt)
     l.Font = Enum.Font.GothamBold
     l.TextSize = 11
     l.TextXAlignment = Enum.TextXAlignment.Left
+    l.ZIndex = 103
     l.Parent = f
 end
 
 local function mkTog(pg,txt,val,cb)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1,0,0,28)
+    f.Size = UDim2.new(1,0,0,32)
     f.BackgroundColor3 = dark2
     f.BorderSizePixel = 0
     f.LayoutOrder = nxO()
+    f.ZIndex = 102
     f.Parent = pg
     Instance.new("UICorner",f).CornerRadius = UDim.new(0,5)
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(1,-52,1,0)
+    l.Size = UDim2.new(1,-56,1,0)
     l.Position = UDim2.new(0,8,0,0)
     l.BackgroundTransparency = 1
     l.Text = txt
@@ -602,19 +540,22 @@ local function mkTog(pg,txt,val,cb)
     l.Font = Enum.Font.Gotham
     l.TextSize = 10
     l.TextXAlignment = Enum.TextXAlignment.Left
+    l.ZIndex = 103
     l.Parent = f
     local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(0,34,0,16)
-    bg.Position = UDim2.new(1,-42,0.5,-8)
+    bg.Size = UDim2.new(0,38,0,20)
+    bg.Position = UDim2.new(1,-46,0.5,-10)
     bg.BackgroundColor3 = val and purple or dark3
     bg.BorderSizePixel = 0
+    bg.ZIndex = 103
     bg.Parent = f
     Instance.new("UICorner",bg).CornerRadius = UDim.new(1,0)
     local dot = Instance.new("Frame")
-    dot.Size = UDim2.new(0,12,0,12)
-    dot.Position = val and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)
+    dot.Size = UDim2.new(0,16,0,16)
+    dot.Position = val and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)
     dot.BackgroundColor3 = white
     dot.BorderSizePixel = 0
+    dot.ZIndex = 104
     dot.Parent = bg
     Instance.new("UICorner",dot).CornerRadius = UDim.new(1,0)
     local on = val
@@ -622,104 +563,97 @@ local function mkTog(pg,txt,val,cb)
     btn.Size = UDim2.new(1,0,1,0)
     btn.BackgroundTransparency = 1
     btn.Text = ""
+    btn.ZIndex = 105
     btn.Parent = f
     btn.MouseButton1Click:Connect(function()
         on = not on
         bg.BackgroundColor3 = on and purple or dark3
-        dot.Position = on and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)
+        dot.Position = on and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)
         if cb then cb(on) end
         noti(txt..": "..(on and "ON" or "OFF"))
     end)
 end
 
-local function mkBtn(pg,txt,cb)
+local function mkBtn(pg,txt,cb,col)
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1,0,0,26)
-    b.BackgroundColor3 = purple
+    b.Size = UDim2.new(1,0,0,30)
+    b.BackgroundColor3 = col or purple
     b.Text = txt
     b.TextColor3 = white
     b.Font = Enum.Font.GothamBold
-    b.TextSize = 10
+    b.TextSize = 11
     b.BorderSizePixel = 0
     b.LayoutOrder = nxO()
+    b.ZIndex = 103
     b.Parent = pg
-    Instance.new("UICorner",b).CornerRadius = UDim.new(0,5)
-    b.MouseButton1Click:Connect(cb)
-    return b
-end
-
-local function mkBtn2(pg,txt,cb,col)
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1,0,0,26)
-    b.BackgroundColor3 = col or purpleD
-    b.Text = txt
-    b.TextColor3 = white
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 10
-    b.BorderSizePixel = 0
-    b.LayoutOrder = nxO()
-    b.Parent = pg
-    Instance.new("UICorner",b).CornerRadius = UDim.new(0,5)
+    Instance.new("UICorner",b).CornerRadius = UDim.new(0,6)
     b.MouseButton1Click:Connect(cb)
     return b
 end
 
 lo = 0
 local fp = tabPages["Farm"]
-mkSec(fp,"-- AUTO FARM RAID --")
-mkTog(fp,"Auto Farm Raid (Melhor p/ Nivel)",false,function(v) farmOn=v end)
-mkTog(fp,"Auto Replay Raid",false,function(v) replayOn=v end)
-mkTog(fp,"Auto Kill Mob (Mata Tudo)",false,function(v) killMobOn=v end)
-mkTog(fp,"Kill Aura (Perto de Voce)",false,function(v) auraOn=v end)
+mkSec(fp,"AUTO FARM")
+mkTog(fp,"Auto Farm Raid (1 Raid, repete)",false,function(v) farmOn=v end)
+mkTog(fp,"Auto Kill Mob (so em Raid)",false,function(v) killMobOn=v end)
+mkTog(fp,"Kill Aura (perto de voce)",false,function(v) auraOn=v end)
 
-mkSec(fp,"-- RELOGIOS E MASTER --")
+mkSec(fp,"RELOGIOS E MASTER")
 mkTog(fp,"Auto Coletar Relogios",false,function(v) autoWatch=v end)
-mkTog(fp,"Auto Master Control (1%)",false,function(v) autoMaster=v end)
+mkTog(fp,"Auto Master Control",false,function(v) autoMaster=v end)
 
-mkSec(fp,"-- TRANSFORM --")
+mkSec(fp,"TRANSFORM")
 mkTog(fp,"Auto Transform",false,function(v) autoTr=v end)
 
 local alLbl = Instance.new("TextLabel")
-alLbl.Size = UDim2.new(1,0,0,24)
+alLbl.Size = UDim2.new(1,0,0,26)
 alLbl.BackgroundColor3 = dark2
 alLbl.BorderSizePixel = 0
 alLbl.Text = "  Alien: "..ALIENS[selAlien]
 alLbl.TextColor3 = white
-alLbl.Font = Enum.Font.Gotham
-alLbl.TextSize = 10
+alLbl.Font = Enum.Font.GothamBold
+alLbl.TextSize = 11
 alLbl.TextXAlignment = Enum.TextXAlignment.Left
 alLbl.LayoutOrder = nxO()
+alLbl.ZIndex = 103
 alLbl.Parent = fp
 Instance.new("UICorner",alLbl).CornerRadius = UDim.new(0,5)
 
-mkBtn2(fp,"< Alien Anterior",function()
+mkBtn(fp,"<< Alien Anterior",function()
     selAlien = selAlien - 1
     if selAlien < 1 then selAlien = #ALIENS end
     alLbl.Text = "  Alien: "..ALIENS[selAlien]
+    noti("Alien: "..ALIENS[selAlien])
 end, dark3)
-mkBtn2(fp,"Proximo Alien >",function()
+mkBtn(fp,"Proximo Alien >>",function()
     selAlien = selAlien + 1
     if selAlien > #ALIENS then selAlien = 1 end
     alLbl.Text = "  Alien: "..ALIENS[selAlien]
+    noti("Alien: "..ALIENS[selAlien])
 end, dark3)
+mkBtn(fp,"TRANSFORMAR AGORA",function()
+    noti("Transformando: "..ALIENS[selAlien])
+    fireTransform(ALIENS[selAlien])
+end)
 
-mkSec(fp,"-- ENERGIA --")
+mkSec(fp,"ENERGIA")
 mkTog(fp,"Energia Infinita",false,function(v) infEn=v end)
 
 lo = 0
 local rp = tabPages["Raids"]
-mkSec(rp,"-- RAID INTELIGENTE --")
+mkSec(rp,"RAID INTELIGENTE")
 
 local rInfo = Instance.new("TextLabel")
-rInfo.Size = UDim2.new(1,0,0,22)
+rInfo.Size = UDim2.new(1,0,0,26)
 rInfo.BackgroundColor3 = dark2
 rInfo.BorderSizePixel = 0
-rInfo.Text = "  Nivel: ? | Raid: ?"
+rInfo.Text = "  Toque Detectar para comecar"
 rInfo.TextColor3 = dimW
-rInfo.Font = Enum.Font.Gotham
+rInfo.Font = Enum.Font.GothamBold
 rInfo.TextSize = 10
 rInfo.TextXAlignment = Enum.TextXAlignment.Left
 rInfo.LayoutOrder = nxO()
+rInfo.ZIndex = 103
 rInfo.Parent = rp
 Instance.new("UICorner",rInfo).CornerRadius = UDim.new(0,5)
 
@@ -727,88 +661,90 @@ mkBtn(rp,"DETECTAR NIVEL + MELHOR RAID",function()
     local lv = getLvl()
     local br = bestRaid(lv)
     if br then
-        rInfo.Text = "  Lv "..lv.." -> "..br.name
+        rInfo.Text = "  Lv "..lv.." -> "..br.name.." (Lv"..br.nivel..")"
         selRaid = br
-        noti("Raid: "..br.name)
+        noti("Selecionada: "..br.name)
     else
         rInfo.Text = "  Lv "..lv.." -> Nenhuma raid"
+        noti("Nenhuma raid para seu nivel")
     end
 end)
 
-mkBtn(rp,"IR PARA RAID SELECIONADA",function()
-    if selRaid then
-        noti("Indo para: "..selRaid.name)
-        smartTP(selRaid.btn)
-    else
-        noti("Detecte seu nivel primeiro!")
-    end
-end)
-
-mkSec(rp,"-- TODAS AS RAIDS --")
+mkSec(rp,"SELECIONAR RAID MANUAL")
 for _,rd in ipairs(RAIDS) do
     mkBtn(rp,rd.name.." (Lv"..rd.nivel..")",function()
-        noti("Indo: "..rd.name)
-        smartTP(rd.btn)
-    end)
+        selRaid = rd
+        rInfo.Text = "  Selecionada: "..rd.name
+        noti("Raid: "..rd.name)
+    end, purpleD)
 end
 
-mkSec(rp,"-- MISSOES ESPECIAIS --")
-mkTog(rp,"Auto Perplexahedro (Completo)",false,function(v) perpOn=v end)
+mkSec(rp,"MISSOES ESPECIAIS")
+mkTog(rp,"Auto Perplexahedro",false,function(v) perpOn=v end)
 mkTog(rp,"Auto Alien X Quests",false,function(v) axOn=v end)
-mkBtn(rp,"TP Perplexaedron AGORA",function()
-    smartTP("Perplexaedron")
-    smartTP("Perplexahedro")
-end)
-mkBtn(rp,"TP Torre Omini (Alien X) AGORA",function()
-    smartTP("Omini")
-    smartTP("Alien")
-end)
 
 lo = 0
 local qp = tabPages["Quests"]
-mkSec(qp,"-- MISSOES SOLO --")
+mkSec(qp,"MISSOES SOLO")
 for _,q in ipairs(QUESTS) do
     mkBtn(qp,q.name.." (Lv"..q.lv.." "..q.xp.."XP)",function()
-        noti("Missao: "..q.name)
-        smartTP(q.name)
-    end)
+        noti("Buscando: "..q.name)
+        local ok = safeTP(q.name)
+        if ok then
+            noti("TP: "..q.name.." OK!")
+        else
+            noti(q.name.." nao encontrado no mapa")
+        end
+    end, purpleD)
 end
 
 lo = 0
 local tp2 = tabPages["TP"]
-mkSec(tp2,"-- LOCALIZACOES --")
+mkSec(tp2,"LOCALIZACOES")
 for _,loc in ipairs(LOCS) do
-    mkBtn2(tp2,loc,function()
-        smartTP(loc)
+    mkBtn(tp2,loc,function()
+        local ok = safeTP(loc)
+        if ok then
+            noti("TP: "..loc.." OK!")
+        else
+            noti(loc.." nao encontrado")
+        end
     end, purpleD)
 end
 
-mkSec(tp2,"-- NPCS IMPORTANTES --")
+mkSec(tp2,"NPCS IMPORTANTES")
 for _,npc in ipairs(NPCS) do
     mkBtn(tp2,"-> "..npc,function()
-        smartTP(npc)
+        local ok = safeTP(npc)
+        if ok then
+            noti("NPC: "..npc.." OK!")
+            task.wait(0.5)
+            clickPrompts()
+        else
+            noti(npc.." nao encontrado")
+        end
     end)
 end
 
 lo = 0
 local pp = tabPages["Player"]
-mkSec(pp,"-- PLAYER --")
+mkSec(pp,"PLAYER STATUS")
 mkTog(pp,"God Mode",false,function(v) godOn=v end)
 
-mkSec(pp,"-- WALKSPEED --")
-mkBtn2(pp,"Speed 50",function() wSpd=50 noti("Speed: 50") end, dark3)
-mkBtn2(pp,"Speed 100",function() wSpd=100 noti("Speed: 100") end, dark3)
-mkBtn2(pp,"Speed 200",function() wSpd=200 noti("Speed: 200") end, dark3)
-mkBtn(pp,"Speed NORMAL (16)",function() wSpd=16 noti("Speed: Normal") end)
+mkSec(pp,"WALKSPEED")
+mkBtn(pp,"Speed 50",function() wSpd=50 noti("Speed: 50") end, dark3)
+mkBtn(pp,"Speed 100",function() wSpd=100 noti("Speed: 100") end, dark3)
+mkBtn(pp,"Speed 200",function() wSpd=200 noti("Speed: 200") end, dark3)
+mkBtn(pp,"Speed NORMAL",function() wSpd=16 noti("Speed: Normal") end)
 
-mkSec(pp,"-- JUMP --")
-mkBtn2(pp,"Jump 100",function() jPow=100 noti("Jump: 100") end, dark3)
-mkBtn2(pp,"Jump 200",function() jPow=200 noti("Jump: 200") end, dark3)
-mkBtn(pp,"Jump NORMAL (50)",function() jPow=50 noti("Jump: Normal") end)
+mkSec(pp,"JUMP POWER")
+mkBtn(pp,"Jump 100",function() jPow=100 noti("Jump: 100") end, dark3)
+mkBtn(pp,"Jump 200",function() jPow=200 noti("Jump: 200") end, dark3)
+mkBtn(pp,"Jump NORMAL",function() jPow=50 noti("Jump: Normal") end)
 
-mkSec(pp,"-- INFO --")
+mkSec(pp,"INFO")
 local pInfo = Instance.new("TextLabel")
-pInfo.Size = UDim2.new(1,0,0,22)
+pInfo.Size = UDim2.new(1,0,0,24)
 pInfo.BackgroundColor3 = dark2
 pInfo.BorderSizePixel = 0
 pInfo.Text = "  "..player.Name
@@ -817,6 +753,7 @@ pInfo.Font = Enum.Font.Gotham
 pInfo.TextSize = 10
 pInfo.TextXAlignment = Enum.TextXAlignment.Left
 pInfo.LayoutOrder = nxO()
+pInfo.ZIndex = 103
 pInfo.Parent = pp
 Instance.new("UICorner",pInfo).CornerRadius = UDim.new(0,5)
 
@@ -828,39 +765,33 @@ end)
 
 lo = 0
 local ep = tabPages["ESP"]
-mkSec(ep,"-- ESP --")
+mkSec(ep,"ESP")
 mkTog(ep,"ESP Inimigos (Vermelho)",false,function(v) espOn=v end)
 
-mkSec(ep,"-- DEBUG --")
-mkBtn(ep,"Listar RemoteEvents",function()
+mkSec(ep,"DEBUG REMOTES")
+mkBtn(ep,"Ver RemoteEvents no Console",function()
     local count = 0
-    for _,o in pairs(game:GetDescendants()) do
-        if o:IsA("RemoteEvent") then
-            local n = o.Name:lower()
-            if n:find("tp") or n:find("teleport") or n:find("warp") or n:find("travel") or n:find("goto") or n:find("raid") or n:find("mission") or n:find("quest") or n:find("boss") or n:find("master") or n:find("transform") then
-                count = count + 1
-                print("[OmniX] Remote: "..o:GetFullName())
-            end
+    for _,o in pairs(ReplicatedStorage:GetDescendants()) do
+        if o:IsA("RemoteEvent") or o:IsA("RemoteFunction") then
+            count = count + 1
+            print("[OmniX] "..o.ClassName..": "..o:GetFullName())
         end
     end
-    noti("Encontrados "..count.." remotes (ver console F9)")
+    noti(count.." remotes encontrados (F9)")
 end)
 
-mkBtn(ep,"Listar Botoes GUI do Jogo",function()
+mkBtn(ep,"Ver Botoes do Jogo no Console",function()
     local count = 0
     local pgui = player:FindFirstChild("PlayerGui")
     if pgui then
         for _,d in pairs(pgui:GetDescendants()) do
-            if d:IsA("TextButton") then
-                local t = d.Text:lower()
-                if t:find("ir para") or t:find("teleport") or t:find("go to") or t:find("iniciar") or t:find("entrar") then
-                    count = count + 1
-                    print("[OmniX] Btn: "..d:GetFullName().." = "..d.Text)
-                end
+            if d:IsA("TextButton") and d.Text ~= "" then
+                count = count + 1
+                print("[OmniX] BTN: "..d.Text.." | "..d:GetFullName())
             end
         end
     end
-    noti("Encontrados "..count.." botoes (ver console F9)")
+    noti(count.." botoes encontrados (F9)")
 end)
 
 local function refreshChar()
@@ -905,12 +836,18 @@ task.spawn(function()
                         o.Value = 9999
                     end
                 end
-                if character then
-                    for _,o in pairs(character:GetDescendants()) do
-                        local n = o.Name:lower()
-                        if (n:find("energy") or n:find("energia")) and (o:IsA("NumberValue") or o:IsA("IntValue")) then
-                            o.Value = 9999
-                        end
+            end)
+        end
+    end
+end)
+
+task.spawn(function()
+    while task.wait(0.3) do
+        if auraOn and rootPart then
+            pcall(function()
+                for _,mob in pairs(getMobs()) do
+                    if mob.r and (rootPart.Position - mob.r.Position).Magnitude <= auraR then
+                        kMob(mob)
                     end
                 end
             end)
@@ -919,30 +856,10 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while task.wait(0.25) do
-        if auraOn then
+    while task.wait(0.5) do
+        if killMobOn and inRaid and rootPart then
             pcall(function()
                 for _,mob in pairs(getMobs()) do
-                    if rootPart and mob.r then
-                        if (rootPart.Position - mob.r.Position).Magnitude <= auraR then
-                            tpToMob(mob)
-                            task.wait(0.05)
-                            kMob(mob)
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while task.wait(0.4) do
-        if killMobOn then
-            pcall(function()
-                for _,mob in pairs(getMobs()) do
-                    tpToMob(mob)
-                    task.wait(0.05)
                     kMob(mob)
                 end
             end)
@@ -951,45 +868,35 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(2) do
         if autoTr then
-            pcall(function()
-                for _,o in pairs(game:GetDescendants()) do
-                    if o:IsA("RemoteEvent") or o:IsA("RemoteFunction") then
-                        local n = o.Name:lower()
-                        if n:find("transform") or n:find("alien") or n:find("omnitrix") then
-                            pcall(function()
-                                if o:IsA("RemoteEvent") then
-                                    o:FireServer(ALIENS[selAlien])
-                                else
-                                    o:InvokeServer(ALIENS[selAlien])
-                                end
-                            end)
-                        end
-                    end
-                end
-            end)
+            fireTransform(ALIENS[selAlien])
         end
     end
 end)
 
 task.spawn(function()
-    while task.wait(3) do
-        if farmOn then
+    while task.wait(5) do
+        if farmOn and not farmBusy then
+            farmBusy = true
             pcall(function()
-                local lv = getLvl()
-                local br = selRaid or bestRaid(lv)
-                if br then
-                    smartTP(br.btn)
-                    task.wait(3)
-                    for _,mob in pairs(getMobs()) do
-                        tpToMob(mob)
-                        task.wait(0.1)
-                        kMob(mob)
+                if not selRaid then
+                    local lv = getLvl()
+                    selRaid = bestRaid(lv)
+                end
+                if selRaid then
+                    inRaid = true
+                    local mobs = getMobs()
+                    if #mobs > 0 then
+                        for _,mob in pairs(mobs) do
+                            kMob(mob)
+                            task.wait(0.1)
+                        end
                     end
-                    clickNearbyPrompts()
+                    clickPrompts()
                 end
             end)
+            farmBusy = false
         end
     end
 end)
@@ -997,35 +904,28 @@ end)
 task.spawn(function()
     while task.wait(1.5) do
         if perpOn or axOn then
+            inRaid = true
             pcall(function()
-                for _,mob in pairs(getMobs()) do
-                    tpToMob(mob)
-                    task.wait(0.05)
+                local mobs = getMobs()
+                for _,mob in pairs(mobs) do
                     kMob(mob)
+                    task.wait(0.05)
                 end
-                clickNearbyPrompts()
+                clickPrompts()
             end)
         end
     end
 end)
 
 task.spawn(function()
-    while task.wait(5) do
-        if autoWatch then
-            pcall(function()
-                collectWatches()
-            end)
-        end
+    while task.wait(6) do
+        if autoWatch then collectWatches() end
     end
 end)
 
 task.spawn(function()
-    while task.wait(10) do
-        if autoMaster then
-            pcall(function()
-                tryMasterControl()
-            end)
-        end
+    while task.wait(12) do
+        if autoMaster then tryMasterControl() end
     end
 end)
 
@@ -1078,9 +978,16 @@ end)
 
 UserInputService.InputBegan:Connect(function(i,p)
     if p then return end
-    if i.KeyCode == Enum.KeyCode.Insert then mf.Visible = not mf.Visible end
-    if i.KeyCode == Enum.KeyCode.F6 then godOn = not godOn noti("God: "..(godOn and "ON" or "OFF")) end
-    if i.KeyCode == Enum.KeyCode.F7 then farmOn = not farmOn noti("Farm: "..(farmOn and "ON" or "OFF")) end
+    if i.KeyCode == Enum.KeyCode.Insert then
+        isMin = not isMin
+        if isMin then
+            TweenService:Create(mf,TweenInfo.new(0.25),{Size=UDim2.new(0,370,0,32)}):Play()
+            mBtn.Text = "+"
+        else
+            TweenService:Create(mf,TweenInfo.new(0.25),{Size=UDim2.new(0,370,0,430)}):Play()
+            mBtn.Text = "_"
+        end
+    end
 end)
 
 local wm = Instance.new("TextLabel")
@@ -1088,15 +995,16 @@ wm.Size = UDim2.new(0,230,0,20)
 wm.Position = UDim2.new(0,6,0,3)
 wm.BackgroundColor3 = dark
 wm.BackgroundTransparency = 0.3
-wm.Text = " Omni-X v3.1 | "..player.Name
+wm.Text = " Omni-X v3.2 | "..player.Name
 wm.TextColor3 = purpleL
 wm.Font = Enum.Font.GothamBold
 wm.TextSize = 10
 wm.TextXAlignment = Enum.TextXAlignment.Left
 wm.BorderSizePixel = 0
+wm.ZIndex = 100
 wm.Parent = gui
 Instance.new("UICorner",wm).CornerRadius = UDim.new(0,5)
 
-noti("Omni-X Hub v3.1 Carregado!")
-task.wait(1)
-noti("Use aba ESP > Debug para ver remotes do jogo")
+noti("Omni-X Hub v3.2 Carregado!")
+task.wait(1.5)
+noti("Selecione Raid na aba Raids antes de ligar Farm")
