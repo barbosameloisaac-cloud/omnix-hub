@@ -132,6 +132,40 @@ impl Database {
         rows.collect()
     }
 
+    /// Execute raw SQL batch (for schema migrations by other modules).
+    pub fn execute_raw(&self, sql: &str) -> Result<(), rusqlite::Error> {
+        let conn = self.conn.lock().unwrap();
+        conn.execute_batch(sql)
+    }
+
+    /// Execute a single parameterized SQL statement.
+    pub fn execute_sql(
+        &self,
+        sql: &str,
+        params: impl rusqlite::Params,
+    ) -> Result<(), rusqlite::Error> {
+        let conn = self.conn.lock().unwrap();
+        conn.execute(sql, params)?;
+        Ok(())
+    }
+
+    /// Run a query and map rows with a closure.
+    pub fn query_mapped<T, P, F>(
+        &self,
+        sql: &str,
+        params: P,
+        map_fn: F,
+    ) -> Result<Vec<T>, rusqlite::Error>
+    where
+        P: rusqlite::Params,
+        F: FnMut(&rusqlite::Row<'_>) -> rusqlite::Result<T>,
+    {
+        let conn = self.conn.lock().unwrap();
+        let mut stmt = conn.prepare(sql)?;
+        let rows = stmt.query_map(params, map_fn)?;
+        rows.collect()
+    }
+
     pub fn get_quarantined_items(&self) -> Result<Vec<QuarantineRecord>, rusqlite::Error> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
