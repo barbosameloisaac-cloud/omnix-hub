@@ -14,3 +14,7 @@ Thumbs.db
 # Temp files
 *.tmp
 *.bak
+
+backend/target/
+*.db
+omnix_config.json
