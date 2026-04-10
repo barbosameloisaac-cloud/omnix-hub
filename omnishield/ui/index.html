@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniShield — Futuristic Antivirus</title>
+    <link rel="stylesheet" href="/css/omnishield.css">
+    <style>
+        /* Inline critical font fallback */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        .logo-text h1, .stat-card .value, .progress-ring .ring-text {
+            font-family: 'Orbitron', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- ═══ HEADER ═══ -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg class="shield" viewBox="0 0 48 48">
+                        <path d="M24 4 L42 12 L42 24 C42 36 33 44 24 46 C15 44 6 36 6 24 L6 12 Z" />
+                        <path d="M18 24 L22 28 L30 18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>OmniShield</h1>
+                    <span class="version">NeonCore v1.0.0</span>
+                </div>
+            </div>
+            <div id="statusBadge" class="status-badge protected">
+                <span class="status-dot"></span>
+                <span id="statusText">System Protected</span>
+            </div>
+        </header>
+
+        <!-- ═══ STATS DASHBOARD ═══ -->
+        <div class="dashboard-grid">
+            <div class="stat-card success">
+                <div class="label">Files Scanned</div>
+                <div class="value" id="statFilesScanned">0</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="label">Threats Detected</div>
+                <div class="value" id="statThreats">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Quarantined</div>
+                <div class="value" id="statQuarantined">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Scans</div>
+                <div class="value" id="statTotalScans">0</div>
+            </div>
+        </div>
+
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <div class="content-grid">
+
+            <!-- Scan Control Panel -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        Scan Control
+                    </div>
+                </div>
+
+                <div class="scan-controls">
+                    <input type="text" class="scan-input" id="scanPath"
+                           placeholder="Enter path to scan (e.g., /home/user/Downloads)">
+                    <button class="btn btn-primary" id="btnScanDir" onclick="startDirectoryScan()">
+                        Scan Directory
+                    </button>
+                    <button class="btn btn-success" id="btnQuickScan" onclick="startQuickScan()">
+                        Quick Scan
+                    </button>
+                </div>
+
+                <div class="scan-controls">
+                    <input type="text" class="scan-input" id="scanFilePath"
+                           placeholder="Enter file path to scan a single file">
+                    <button class="btn btn-ghost" onclick="scanSingleFile()">
+                        Scan File
+                    </button>
+                </div>
+
+                <div class="toggle-container" style="margin-bottom: 16px;">
+                    <div class="toggle" id="toggleQuarantine" onclick="toggleAutoQuarantine()"></div>
+                    <span>Auto-Quarantine Critical Threats</span>
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-ring">
+                        <svg viewBox="0 0 80 80">
+                            <circle class="ring-bg" cx="40" cy="40" r="36"/>
+                            <circle class="ring-fill" id="progressRing" cx="40" cy="40" r="36"/>
+                        </svg>
+                        <div class="ring-text" id="progressPercent">0%</div>
+                    </div>
+                    <div class="progress-info">
+                        <div class="scan-status" id="scanStatusText">Initializing...</div>
+                        <div class="current-file" id="currentFile">Preparing scan engine...</div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-dim);">
+                            <span id="scannedCount">0</span> / <span id="totalCount">0</span> files
+                            &bull; <span id="threatsCount">0</span> threats
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="abortScan()">Abort</button>
+                </div>
+            </div>
+
+            <!-- Real-Time Monitor -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Real-Time Protection
+                    </div>
+                </div>
+
+                <div id="monitorStatus" class="monitor-status inactive">
+                    <div class="monitor-icon">&#9737;</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;" id="monitorLabel">Protection Inactive</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim);">Enable to monitor file changes in real-time</div>
+                    </div>
+                </div>
+
+                <div class="scan-controls">
+                    <input type="text" class="scan-input" id="monitorPath"
+                           placeholder="Path to monitor (default: ~/Downloads)">
+                    <button class="btn btn-success" id="btnStartMonitor" onclick="startMonitor()">
+                        Start Monitor
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="btnStopMonitor" onclick="stopMonitor()" style="display:none;">
+                        Stop
+                    </button>
+                </div>
+
+                <div class="monitor-paths" id="monitorPaths"></div>
+
+                <!-- Engine Status -->
+                <div style="margin-top: 24px;">
+                    <div class="card-title" style="margin-bottom: 14px; font-size: 0.85rem;">
+                        <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Detection Engines
+                    </div>
+                    <div class="engine-grid" id="engineGrid">
+                        <div class="engine-item">
+                            <div class="engine-name">Signatures</div>
+                            <div class="engine-status">Active</div>
+                            <div class="engine-detail" id="sigCount">Loading...</div>
+                        </div>
+                        <div class="engine-item">
+                            <div class="engine-name">Heuristics</div>
+                            <div class="engine-status">Active</div>
+                            <div class="engine-detail" id="heurCount">Behavioral rules</div>
+                        </div>
+                        <div class="engine-item">
+                            <div class="engine-name">Entropy</div>
+                            <div class="engine-status">Active</div>
+                            <div class="engine-detail">Shannon analysis</div>
+                        </div>
+                        <div class="engine-item">
+                            <div class="engine-name">File Analyzer</div>
+                            <div class="engine-status">Active</div>
+                            <div class="engine-detail">Multi-platform</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threat History -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Threat History
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="refreshThreats()">Refresh</button>
+                </div>
+                <div class="threat-list" id="threatList">
+                    <div class="empty-state">
+                        <div class="icon">&#9737;</div>
+                        <p>No threats detected yet. Run a scan to begin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quarantine Vault -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Quarantine Vault
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="refreshQuarantine()">Refresh</button>
+                </div>
+                <div class="quarantine-list" id="quarantineList">
+                    <div class="empty-state">
+                        <div class="icon">&#128274;</div>
+                        <p>Quarantine vault is empty. Threats will appear here when quarantined.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="glass-card full-width">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Activity Log
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="clearActivity()">Clear</button>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div class="activity-item">
+                        <span class="activity-time">--:--:--</span>
+                        <span class="activity-message">OmniShield NeonCore initialized. Awaiting commands.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/omnishield.js"></script>
+</body>
+</html>

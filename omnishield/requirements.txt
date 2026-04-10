@@ -1,0 +1,15 @@
+# OmniShield - Cross-Platform Antivirus Engine
+# Install: pip install -r requirements.txt
+
+# Web API Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# File System Monitoring
+watchdog>=3.0.0
+
+# ASGI/CORS support (included with FastAPI)
+pydantic>=2.0.0
+
+# Optional: Enhanced terminal output
+rich>=13.0.0
