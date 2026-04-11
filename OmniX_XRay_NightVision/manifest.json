@@ -1,0 +1,17 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "OmniX X-Ray + Night Vision",
+        "description": "X-Ray com Visao Noturna - Pedras invisiveis, minerios brilhantes, deteccao de quedas e sinalizacao de perigo. by OmniX Hub",
+        "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "version": [1, 0, 0],
+        "min_engine_version": [1, 20, 0]
+    },
+    "modules": [
+        {
+            "type": "resources",
+            "uuid": "f9e8d7c6-b5a4-3210-fedc-ba0987654321",
+            "version": [1, 0, 0]
+        }
+    ]
+}
