@@ -1,0 +1,95 @@
+======================================================
+  OmniX X-Ray + Visao Noturna - Minecraft Bedrock
+======================================================
+
+COMO INSTALAR:
+1. Copie a pasta "OmniX_XRay_NightVision" para:
+   - Windows: %localappdata%\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\LocalState\games\com.mojang\resource_packs\
+   - Android: /storage/emulated/0/games/com.mojang/resource_packs/
+   - iOS: Minecraft > Games > com.mojang > resource_packs
+2. Abra o Minecraft Bedrock
+3. Va em Configuracoes > Pacotes de Recursos Globais
+4. Ative "OmniX X-Ray + Night Vision"
+5. Pronto! Aproveite!
+
+ALTERNATIVA (arquivo .mcpack):
+1. Compacte a pasta como .zip
+2. Renomeie de .zip para .mcpack
+3. Abra o arquivo .mcpack com o Minecraft
+
+======================================================
+FUNCIONALIDADES:
+======================================================
+
+[X-RAY] BLOCOS INVISIVEIS (transparentes):
+  - Pedra (stone) e variantes (andesito, diorito, granito)
+  - Deepslate e todas variantes
+  - Netherrack
+  - Tuff, Calcite, Basalto
+  - Blackstone e variantes
+  - End Stone
+  - Arenito (sandstone)
+  - Terracota natural
+
+[VISAO NOTURNA] MINERIOS BRILHANTES:
+  - Carvao: Cinza escuro com brilho
+  - Ferro: Bege rosado brilhante
+  - Cobre: Laranja brilhante
+  - Ouro: Amarelo dourado intenso
+  - Redstone: Vermelho vivo
+  - Lapis: Azul brilhante
+  - Diamante: CIANO BRILHANTE (impossivel nao ver!)
+  - Esmeralda: Verde neon
+  - Quartzo: Branco luminoso
+  - Ancient Debris: Marrom dourado
+
+[100% VISIVEL] ESTRUTURAS E CONSTRUCOES:
+  - Baus e Ender Chests (dourado brilhante)
+  - Spawners (vermelho no centro)
+  - TNT (vermelho com padrao branco)
+  - Obsidiana (roxo escuro visivel)
+  - Stone Bricks (masmorras, fortalezas)
+  - Nether Bricks (fortalezas do Nether)
+  - End Portal Frames
+  - Purpur (End Cities)
+  - Prismarinha (monumentos oceanicos)
+  - Trilhos (mineshafts)
+
+[100% VISIVEL] LIQUIDOS E CRISTAIS:
+  - Agua: Azul brilhante com ondas
+  - Lava: Laranja/vermelho intenso
+  - Ametista: Roxo cristalino brilhante
+
+[SINALIZACAO] TERRA E CASCALHO:
+  - Terra: Borda AMARELA de aviso (opacidade baixa)
+  - Cascalho: Listras LARANJA de aviso (bloco de gravidade!)
+  - Areia: Listras LARANJA-VERMELHA (perigo de queda)
+  - Grama: Borda VERDE-AMARELA sutil
+
+[DETECCAO DE QUEDAS] SISTEMA DE AVISO DE PRECIPICIOS:
+  O pack usa uma abordagem multi-camada para avisar sobre quedas:
+
+  1. TRANSPARENCIA: Toda pedra e invisivel, entao voce VE os buracos
+     e precipicios atraves das paredes enquanto minera!
+
+  2. CHEVRONS VERMELHOS: Paralelepipedos (cobblestone) tem setas
+     vermelhas e amarelas apontando PARA BAIXO. Cobblestone aparece
+     naturalmente nas bordas de cavernas, entao vermelho = PERIGO!
+
+  3. LISTRAS LARANJA: Cascalho e areia tem listras de aviso porque
+     sao blocos de gravidade - podem cair e te levar junto!
+
+  4. BEDROCK MAGENTA: Bedrock fica rosa/magenta brilhante para
+     servir como referencia do fundo do mundo.
+
+  5. AR DE CAVERNA: Espacos vazios tem um brilho vermelho sutil
+     marcando areas perigosas e vazias.
+
+  DICA: Enquanto estiver minerando, se voce ver:
+  - VERMELHO com setas para baixo = PARE! Tem queda ali!
+  - LARANJA listrado = CUIDADO! Bloco de gravidade!
+  - VAZIO visivel (transparencia) = Caverna/buraco detectado!
+
+======================================================
+  by OmniX Hub - Use por sua conta e risco!
+======================================================

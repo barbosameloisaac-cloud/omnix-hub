@@ -1,0 +1,461 @@
+{
+    "resource_pack_name": "OmniX X-Ray + Night Vision",
+    "texture_name": "atlas.terrain",
+    "padding": 8,
+    "num_mip_levels": 4,
+    "texture_data": {
+        "amethyst_block": {
+            "textures": "textures/blocks/amethyst_block"
+        },
+        "amethyst_cluster": {
+            "textures": "textures/blocks/amethyst_cluster"
+        },
+        "ancient_debris_side": {
+            "textures": "textures/blocks/ancient_debris_side"
+        },
+        "ancient_debris_top": {
+            "textures": "textures/blocks/ancient_debris_top"
+        },
+        "barrier": {
+            "textures": "textures/blocks/barrier"
+        },
+        "basalt_side": {
+            "textures": "textures/blocks/basalt_side"
+        },
+        "basalt_top": {
+            "textures": "textures/blocks/basalt_top"
+        },
+        "bedrock": {
+            "textures": "textures/blocks/bedrock"
+        },
+        "blackstone": {
+            "textures": "textures/blocks/blackstone"
+        },
+        "blackstone_top": {
+            "textures": "textures/blocks/blackstone_top"
+        },
+        "budding_amethyst": {
+            "textures": "textures/blocks/budding_amethyst"
+        },
+        "calcite": {
+            "textures": "textures/blocks/calcite"
+        },
+        "cave_air": {
+            "textures": "textures/blocks/cave_air"
+        },
+        "chest_front": {
+            "textures": "textures/blocks/chest_front"
+        },
+        "chest_side": {
+            "textures": "textures/blocks/chest_side"
+        },
+        "chest_top": {
+            "textures": "textures/blocks/chest_top"
+        },
+        "chiseled_deepslate": {
+            "textures": "textures/blocks/chiseled_deepslate"
+        },
+        "chiseled_nether_bricks": {
+            "textures": "textures/blocks/chiseled_nether_bricks"
+        },
+        "chiseled_polished_blackstone": {
+            "textures": "textures/blocks/chiseled_polished_blackstone"
+        },
+        "chiseled_tuff": {
+            "textures": "textures/blocks/chiseled_tuff"
+        },
+        "chiseled_tuff_top": {
+            "textures": "textures/blocks/chiseled_tuff_top"
+        },
+        "coal_ore": {
+            "textures": "textures/blocks/coal_ore"
+        },
+        "coarse_dirt": {
+            "textures": "textures/blocks/coarse_dirt"
+        },
+        "cobbled_deepslate": {
+            "textures": "textures/blocks/cobbled_deepslate"
+        },
+        "cobblestone": {
+            "textures": "textures/blocks/cobblestone"
+        },
+        "copper_ore": {
+            "textures": "textures/blocks/copper_ore"
+        },
+        "cracked_deepslate_bricks": {
+            "textures": "textures/blocks/cracked_deepslate_bricks"
+        },
+        "cracked_deepslate_tiles": {
+            "textures": "textures/blocks/cracked_deepslate_tiles"
+        },
+        "cracked_nether_bricks": {
+            "textures": "textures/blocks/cracked_nether_bricks"
+        },
+        "cracked_polished_blackstone_bricks": {
+            "textures": "textures/blocks/cracked_polished_blackstone_bricks"
+        },
+        "crying_obsidian": {
+            "textures": "textures/blocks/crying_obsidian"
+        },
+        "dark_prismarine": {
+            "textures": "textures/blocks/dark_prismarine"
+        },
+        "deepslate": {
+            "textures": "textures/blocks/deepslate"
+        },
+        "deepslate_bricks": {
+            "textures": "textures/blocks/deepslate_bricks"
+        },
+        "deepslate_coal_ore": {
+            "textures": "textures/blocks/deepslate_coal_ore"
+        },
+        "deepslate_copper_ore": {
+            "textures": "textures/blocks/deepslate_copper_ore"
+        },
+        "deepslate_diamond_ore": {
+            "textures": "textures/blocks/deepslate_diamond_ore"
+        },
+        "deepslate_emerald_ore": {
+            "textures": "textures/blocks/deepslate_emerald_ore"
+        },
+        "deepslate_gold_ore": {
+            "textures": "textures/blocks/deepslate_gold_ore"
+        },
+        "deepslate_iron_ore": {
+            "textures": "textures/blocks/deepslate_iron_ore"
+        },
+        "deepslate_lapis_ore": {
+            "textures": "textures/blocks/deepslate_lapis_ore"
+        },
+        "deepslate_redstone_ore": {
+            "textures": "textures/blocks/deepslate_redstone_ore"
+        },
+        "deepslate_tiles": {
+            "textures": "textures/blocks/deepslate_tiles"
+        },
+        "deepslate_top": {
+            "textures": "textures/blocks/deepslate_top"
+        },
+        "diamond_ore": {
+            "textures": "textures/blocks/diamond_ore"
+        },
+        "dirt": {
+            "textures": "textures/blocks/dirt"
+        },
+        "dirt_with_roots": {
+            "textures": "textures/blocks/dirt_with_roots"
+        },
+        "emerald_ore": {
+            "textures": "textures/blocks/emerald_ore"
+        },
+        "end_bricks": {
+            "textures": "textures/blocks/end_bricks"
+        },
+        "end_portal_frame_side": {
+            "textures": "textures/blocks/end_portal_frame_side"
+        },
+        "end_portal_frame_top": {
+            "textures": "textures/blocks/end_portal_frame_top"
+        },
+        "end_stone": {
+            "textures": "textures/blocks/end_stone"
+        },
+        "ender_chest_front": {
+            "textures": "textures/blocks/ender_chest_front"
+        },
+        "ender_chest_side": {
+            "textures": "textures/blocks/ender_chest_side"
+        },
+        "ender_chest_top": {
+            "textures": "textures/blocks/ender_chest_top"
+        },
+        "farmland_dry": {
+            "textures": "textures/blocks/farmland_dry"
+        },
+        "farmland_wet": {
+            "textures": "textures/blocks/farmland_wet"
+        },
+        "gilded_blackstone": {
+            "textures": "textures/blocks/gilded_blackstone"
+        },
+        "gold_ore": {
+            "textures": "textures/blocks/gold_ore"
+        },
+        "grass_carried": {
+            "textures": "textures/blocks/grass_carried"
+        },
+        "grass_path_side": {
+            "textures": "textures/blocks/grass_path_side"
+        },
+        "grass_path_top": {
+            "textures": "textures/blocks/grass_path_top"
+        },
+        "grass_side": {
+            "textures": "textures/blocks/grass_side"
+        },
+        "grass_side_carried": {
+            "textures": "textures/blocks/grass_side_carried"
+        },
+        "grass_top": {
+            "textures": "textures/blocks/grass_top"
+        },
+        "gravel": {
+            "textures": "textures/blocks/gravel"
+        },
+        "hardened_clay": {
+            "textures": "textures/blocks/hardened_clay"
+        },
+        "iron_ore": {
+            "textures": "textures/blocks/iron_ore"
+        },
+        "lapis_ore": {
+            "textures": "textures/blocks/lapis_ore"
+        },
+        "large_amethyst_bud": {
+            "textures": "textures/blocks/large_amethyst_bud"
+        },
+        "lava_flow": {
+            "textures": "textures/blocks/lava_flow"
+        },
+        "lava_still": {
+            "textures": "textures/blocks/lava_still"
+        },
+        "lit_redstone_ore": {
+            "textures": "textures/blocks/lit_redstone_ore"
+        },
+        "medium_amethyst_bud": {
+            "textures": "textures/blocks/medium_amethyst_bud"
+        },
+        "mob_spawner": {
+            "textures": "textures/blocks/mob_spawner"
+        },
+        "mossy_cobblestone": {
+            "textures": "textures/blocks/mossy_cobblestone"
+        },
+        "mud": {
+            "textures": "textures/blocks/mud"
+        },
+        "muddy_mangrove_roots_side": {
+            "textures": "textures/blocks/muddy_mangrove_roots_side"
+        },
+        "muddy_mangrove_roots_top": {
+            "textures": "textures/blocks/muddy_mangrove_roots_top"
+        },
+        "mycelium_side": {
+            "textures": "textures/blocks/mycelium_side"
+        },
+        "mycelium_top": {
+            "textures": "textures/blocks/mycelium_top"
+        },
+        "nether_brick": {
+            "textures": "textures/blocks/nether_brick"
+        },
+        "nether_gold_ore": {
+            "textures": "textures/blocks/nether_gold_ore"
+        },
+        "netherrack": {
+            "textures": "textures/blocks/netherrack"
+        },
+        "obsidian": {
+            "textures": "textures/blocks/obsidian"
+        },
+        "packed_mud": {
+            "textures": "textures/blocks/packed_mud"
+        },
+        "podzol_side": {
+            "textures": "textures/blocks/podzol_side"
+        },
+        "podzol_top": {
+            "textures": "textures/blocks/podzol_top"
+        },
+        "polished_basalt_side": {
+            "textures": "textures/blocks/polished_basalt_side"
+        },
+        "polished_basalt_top": {
+            "textures": "textures/blocks/polished_basalt_top"
+        },
+        "polished_blackstone": {
+            "textures": "textures/blocks/polished_blackstone"
+        },
+        "polished_blackstone_bricks": {
+            "textures": "textures/blocks/polished_blackstone_bricks"
+        },
+        "polished_deepslate": {
+            "textures": "textures/blocks/polished_deepslate"
+        },
+        "polished_tuff": {
+            "textures": "textures/blocks/polished_tuff"
+        },
+        "polished_tuff_side": {
+            "textures": "textures/blocks/polished_tuff_side"
+        },
+        "polished_tuff_top": {
+            "textures": "textures/blocks/polished_tuff_top"
+        },
+        "prismarine": {
+            "textures": "textures/blocks/prismarine"
+        },
+        "prismarine_bricks": {
+            "textures": "textures/blocks/prismarine_bricks"
+        },
+        "purpur_block": {
+            "textures": "textures/blocks/purpur_block"
+        },
+        "purpur_pillar": {
+            "textures": "textures/blocks/purpur_pillar"
+        },
+        "purpur_pillar_top": {
+            "textures": "textures/blocks/purpur_pillar_top"
+        },
+        "quartz_ore": {
+            "textures": "textures/blocks/quartz_ore"
+        },
+        "rail_activator": {
+            "textures": "textures/blocks/rail_activator"
+        },
+        "rail_detector": {
+            "textures": "textures/blocks/rail_detector"
+        },
+        "rail_golden": {
+            "textures": "textures/blocks/rail_golden"
+        },
+        "rail_normal": {
+            "textures": "textures/blocks/rail_normal"
+        },
+        "raw_copper_block": {
+            "textures": "textures/blocks/raw_copper_block"
+        },
+        "raw_gold_block": {
+            "textures": "textures/blocks/raw_gold_block"
+        },
+        "raw_iron_block": {
+            "textures": "textures/blocks/raw_iron_block"
+        },
+        "red_nether_brick": {
+            "textures": "textures/blocks/red_nether_brick"
+        },
+        "red_sand": {
+            "textures": "textures/blocks/red_sand"
+        },
+        "red_sandstone_bottom": {
+            "textures": "textures/blocks/red_sandstone_bottom"
+        },
+        "red_sandstone_normal": {
+            "textures": "textures/blocks/red_sandstone_normal"
+        },
+        "red_sandstone_top": {
+            "textures": "textures/blocks/red_sandstone_top"
+        },
+        "redstone_ore": {
+            "textures": "textures/blocks/redstone_ore"
+        },
+        "sand": {
+            "textures": "textures/blocks/sand"
+        },
+        "sandstone_bottom": {
+            "textures": "textures/blocks/sandstone_bottom"
+        },
+        "sandstone_normal": {
+            "textures": "textures/blocks/sandstone_normal"
+        },
+        "sandstone_top": {
+            "textures": "textures/blocks/sandstone_top"
+        },
+        "scaffolding_bottom": {
+            "textures": "textures/blocks/scaffolding_bottom"
+        },
+        "scaffolding_side": {
+            "textures": "textures/blocks/scaffolding_side"
+        },
+        "scaffolding_top": {
+            "textures": "textures/blocks/scaffolding_top"
+        },
+        "sea_lantern": {
+            "textures": "textures/blocks/sea_lantern"
+        },
+        "small_amethyst_bud": {
+            "textures": "textures/blocks/small_amethyst_bud"
+        },
+        "smooth_stone": {
+            "textures": "textures/blocks/smooth_stone"
+        },
+        "smooth_stone_slab_side": {
+            "textures": "textures/blocks/smooth_stone_slab_side"
+        },
+        "soul_sand": {
+            "textures": "textures/blocks/soul_sand"
+        },
+        "soul_soil": {
+            "textures": "textures/blocks/soul_soil"
+        },
+        "stone": {
+            "textures": "textures/blocks/stone"
+        },
+        "stone_andesite": {
+            "textures": "textures/blocks/stone_andesite"
+        },
+        "stone_diorite": {
+            "textures": "textures/blocks/stone_diorite"
+        },
+        "stone_granite": {
+            "textures": "textures/blocks/stone_granite"
+        },
+        "stone_slab_side": {
+            "textures": "textures/blocks/stone_slab_side"
+        },
+        "stone_slab_top": {
+            "textures": "textures/blocks/stone_slab_top"
+        },
+        "stonebrick": {
+            "textures": "textures/blocks/stonebrick"
+        },
+        "stonebrick_carved": {
+            "textures": "textures/blocks/stonebrick_carved"
+        },
+        "stonebrick_cracked": {
+            "textures": "textures/blocks/stonebrick_cracked"
+        },
+        "stonebrick_mossy": {
+            "textures": "textures/blocks/stonebrick_mossy"
+        },
+        "suspicious_gravel_0": {
+            "textures": "textures/blocks/suspicious_gravel_0"
+        },
+        "suspicious_sand_0": {
+            "textures": "textures/blocks/suspicious_sand_0"
+        },
+        "tnt_bottom": {
+            "textures": "textures/blocks/tnt_bottom"
+        },
+        "tnt_side": {
+            "textures": "textures/blocks/tnt_side"
+        },
+        "tnt_top": {
+            "textures": "textures/blocks/tnt_top"
+        },
+        "tuff": {
+            "textures": "textures/blocks/tuff"
+        },
+        "tuff_bricks": {
+            "textures": "textures/blocks/tuff_bricks"
+        },
+        "tuff_side": {
+            "textures": "textures/blocks/tuff_side"
+        },
+        "tuff_top": {
+            "textures": "textures/blocks/tuff_top"
+        },
+        "water_flow": {
+            "textures": "textures/blocks/water_flow"
+        },
+        "water_flow_grey": {
+            "textures": "textures/blocks/water_flow_grey"
+        },
+        "water_still": {
+            "textures": "textures/blocks/water_still"
+        },
+        "water_still_grey": {
+            "textures": "textures/blocks/water_still_grey"
+        }
+    }
+}
