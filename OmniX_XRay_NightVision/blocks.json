@@ -1,0 +1,61 @@
+{
+    "format_version": [1, 1, 0],
+
+    "stone": {
+        "textures": "stone",
+        "sound": "stone",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "deepslate": {
+        "textures": {
+            "up": "deepslate_top",
+            "down": "deepslate_top",
+            "side": "deepslate"
+        },
+        "sound": "stone",
+        "brightness_gamma": 1.0
+    },
+    "netherrack": {
+        "textures": "netherrack",
+        "sound": "stone",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "cobblestone": {
+        "textures": "cobblestone",
+        "sound": "stone",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "mossy_cobblestone": {
+        "textures": "mossy_cobblestone",
+        "sound": "stone",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "dirt": {
+        "textures": "dirt",
+        "sound": "gravel",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "gravel": {
+        "textures": "gravel",
+        "sound": "gravel",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "sand": {
+        "textures": "sand",
+        "sound": "sand",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    },
+    "bedrock": {
+        "textures": "bedrock",
+        "sound": "stone",
+        "brightness_gamma": 1.0,
+        "isotropic": true
+    }
+}
